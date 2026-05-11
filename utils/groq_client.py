@@ -36,9 +36,20 @@ def call_llm(prompt: str, system: str = "Eres un asistente experto. Responde sol
 
 def call_llm_json(prompt: str, system: str = "Eres un asistente experto. Responde solo con JSON válido, sin markdown ni texto adicional.",
                   max_tokens: int = 4096) -> dict:
-    """Llama al LLM y parsea la respuesta como JSON, tolerando fences de markdown."""
-    raw = call_llm(prompt, system=system, max_tokens=max_tokens)
-    return parse_json(raw)
+    """Llama al LLM en modo JSON nativo — garantiza salida JSON válida siempre."""
+    client = get_client()
+    response = client.chat.completions.create(
+        model=MODEL,
+        messages=[
+            {"role": "system", "content": system},
+            {"role": "user", "content": prompt},
+        ],
+        max_tokens=max_tokens,
+        temperature=0.7,
+        response_format={"type": "json_object"},
+    )
+    raw = response.choices[0].message.content
+    return json.loads(raw)
 
 
 def parse_json(text: str) -> dict:
