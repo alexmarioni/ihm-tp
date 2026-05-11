@@ -9,8 +9,11 @@ import subprocess
 from pathlib import Path
 
 import edge_tts
+import imageio_ffmpeg
 
 from utils.checkpoint import load_checkpoint
+
+FFMPEG = imageio_ffmpeg.get_ffmpeg_exe()
 
 TTS_VOICE = os.getenv("TTS_VOICE", "es-ES-AlvaroNeural")
 TTS_RATE = os.getenv("TTS_RATE", "-10%")
@@ -42,7 +45,7 @@ def merge_audio_video(video_path: str, audio_path: str, output_path: str, total_
     fade_out_start = max(0, total_duration - 0.8)
 
     cmd = [
-        "ffmpeg", "-y",
+        FFMPEG, "-y",
         "-i", video_path,
         "-i", audio_path,
         "-c:v", "copy",

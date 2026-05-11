@@ -7,12 +7,16 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+import imageio_ffmpeg
+
 from utils.checkpoint import load_checkpoint
 from utils.text_overlay import render_text_overlay
 
 VIDEO_WIDTH = int(os.getenv("VIDEO_WIDTH", "1080"))
 VIDEO_HEIGHT = int(os.getenv("VIDEO_HEIGHT", "1920"))
 FPS = int(os.getenv("VIDEO_FPS", "24"))
+
+FFMPEG = imageio_ffmpeg.get_ffmpeg_exe()
 
 
 def build_ken_burns_filter(escena: dict) -> str:
@@ -71,7 +75,7 @@ def generate_scene_clip(escena: dict, image_path: str, output_path: str) -> None
     duration = escena["duracion"]
 
     cmd = [
-        "ffmpeg", "-y",
+        FFMPEG, "-y",
         "-loop", "1",
         "-i", image_path,
         "-vf", vf_filter,
@@ -94,7 +98,7 @@ def overlay_text_on_clip(clip_path: str, texto: str, output_path: str) -> None:
 
     try:
         cmd = [
-            "ffmpeg", "-y",
+            FFMPEG, "-y",
             "-i", clip_path,
             "-i", tmp_path,
             "-filter_complex", "[0:v][1:v]overlay=0:0",
@@ -144,7 +148,7 @@ def compose_video(storyboard: dict, images_dir: str, segments_dir: str, output_p
 
     print("  Uniendo escenas...")
     cmd = [
-        "ffmpeg", "-y",
+        FFMPEG, "-y",
         "-f", "concat",
         "-safe", "0",
         "-i", clips_file,
