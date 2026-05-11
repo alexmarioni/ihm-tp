@@ -30,12 +30,12 @@ ESTRUCTURA OBLIGATORIA:
 - Escena 3 "Cierre" (orden 3): inicio_seg=9, fin_seg={duracion_total}, duracion={duracion_cierre}
 
 RESTRICCIONES ESTRICTAS:
-- descripcion_visual_pollinations: en INGLÉS, máximo 60 palabras, imagen vertical 9:16, fotorrealista o ilustrativa, incluye lighting + mood + composition; NO menciones texto ni palabras escritas en la imagen
-- texto_pantalla: MÁXIMO 5 palabras por escena; puede ser null en escena 2
-- texto_narracion: máximo 12 palabras por escena, voz en off en español, no compite con el texto en pantalla
+- descripcion_visual_pollinations: en INGLÉS, máximo 60 palabras, imagen vertical 9:16, fotorrealista o ilustrativa, incluye lighting + mood + composition; NO menciones texto ni palabras escritas en la imagen. La imagen DEBE representar visualmente el tema "{tema_central}" — usá elementos visuales concretos relacionados (ej: si el tema es TDAH → cerebro, neuronas, distracción, foco; si es medio ambiente → naturaleza, contaminación; si es tecnología → pantallas, código, datos)
+- texto_pantalla: MÁXIMO 5 palabras. DEBE ser una palabra clave o concepto directo del PDF (de esta lista: {palabras_clave}). PROHIBIDO texto genérico como "Atención", "Ahora", "Descubre". Puede ser null en escena 2
+- texto_narracion: máximo 12 palabras, voz en off en español. DEBE explicar o aludir a un concepto específico del PDF, no repetir el texto en pantalla. PROHIBIDO frases genéricas
 - movimiento_ken_burns.tipo: uno de ["zoom_in", "zoom_out", "pan_left", "pan_right"]
 - movimiento_ken_burns.zoom_inicio y zoom_fin: valores entre 1.0 y 1.25
-- Todo el contenido debe derivarse 100% del PDF analizado
+- CADA elemento de texto y visual DEBE poderse rastrear hasta una idea del PDF analizado
 
 Responde con este JSON exacto:
 {{
@@ -103,6 +103,8 @@ def build_storyboard(analysis: dict, hook: dict, psychology: dict, duracion_tota
         psychology=json.dumps(psychology.get("tabla_traduccion", []), ensure_ascii=False, indent=2),
         duracion_total=duracion_total,
         duracion_cierre=duracion_cierre,
+        tema_central=analysis.get("tema_central", ""),
+        palabras_clave=", ".join(analysis.get("palabras_clave", [])),
     )
     return call_llm_json(prompt, system=SYSTEM, max_tokens=6000)
 

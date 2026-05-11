@@ -14,20 +14,32 @@ SYSTEM = (
     "Responde ÚNICAMENTE con JSON válido, sin markdown ni texto adicional."
 )
 
-PROMPT_GENERATE = """ANÁLISIS DEL CONTENIDO:
-{analysis}
+PROMPT_GENERATE = """El PDF trata sobre: "{tema_central}"
+Idea central: "{idea_central}"
+Palabras clave del documento: {palabras_clave}
 
-Tu tarea: Genera 3 opciones de frase de apertura (hook) para un video de 8-15 segundos.
-Cada hook debe:
-- Tener MÁXIMO 8 palabras
-- Generar sorpresa, urgencia o curiosidad inmediata
-- Estar orientado a la emoción "{emocion_dominante}"
-- NO explicar — solo provocar, impactar
+Tu tarea: Genera 3 hooks de apertura para un video de 8-15 segundos sobre este tema específico.
+
+REGLAS ESTRICTAS:
+- Máximo 8 palabras por hook
+- Cada hook DEBE aludir directamente al tema "{tema_central}" o a alguna de sus palabras clave
+- PROHIBIDO usar frases genéricas vacías como "Atención", "Ahora", "Descubre", "Mira esto", "¿Sabías?" sin conectarlas al tema
+- El hook debe provocar impacto en alguien que NO sabe nada del tema todavía
+
+Ejemplos de hooks MALOS (genéricos, no usar):
+- "Atención, ¡ahora!" → no dice nada del tema
+- "Descubre algo nuevo" → podría ser de cualquier video
+- "¿Puedes enfocarte?" → genérico
+
+Ejemplos de hooks BUENOS (específicos al tema):
+- Si el tema es TDAH: "Tu cerebro no falla, compite contra todo"
+- Si el tema es diseño: "Un mal diseño le cuesta atención al usuario"
+- Si el tema es neurociencia: "Cada imagen activa neuronas que no sabías tener"
 
 Responde ÚNICAMENTE con JSON válido:
 {{
   "candidatos": [
-    {{"id": 1, "texto": "...", "razon": "por qué atrae la atención"}},
+    {{"id": 1, "texto": "...", "razon": "cómo se conecta con el tema del PDF"}},
     {{"id": 2, "texto": "...", "razon": "..."}},
     {{"id": 3, "texto": "...", "razon": "..."}}
   ]
@@ -59,8 +71,9 @@ Responde ÚNICAMENTE con JSON válido:
 
 def generate_hooks(analysis: dict) -> dict:
     prompt = PROMPT_GENERATE.format(
-        analysis=json.dumps(analysis, ensure_ascii=False, indent=2),
-        emocion_dominante=analysis.get("emocion_dominante", ""),
+        tema_central=analysis.get("tema_central", ""),
+        idea_central=analysis.get("idea_central", ""),
+        palabras_clave=", ".join(analysis.get("palabras_clave", [])),
     )
     return call_llm_json(prompt, system=SYSTEM)
 
