@@ -9,11 +9,10 @@ import subprocess
 from pathlib import Path
 
 import edge_tts
-import imageio_ffmpeg
 
 from utils.checkpoint import load_checkpoint
 
-FFMPEG = imageio_ffmpeg.get_ffmpeg_exe()
+FFMPEG = "ffmpeg"
 
 TTS_VOICE = os.getenv("TTS_VOICE", "es-ES-AlvaroNeural")
 TTS_RATE = os.getenv("TTS_RATE", "-10%")

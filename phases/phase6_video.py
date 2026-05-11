@@ -7,8 +7,6 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-import imageio_ffmpeg
-
 from utils.checkpoint import load_checkpoint
 from utils.text_overlay import render_text_overlay
 
@@ -16,7 +14,7 @@ VIDEO_WIDTH = int(os.getenv("VIDEO_WIDTH", "1080"))
 VIDEO_HEIGHT = int(os.getenv("VIDEO_HEIGHT", "1920"))
 FPS = int(os.getenv("VIDEO_FPS", "24"))
 
-FFMPEG = imageio_ffmpeg.get_ffmpeg_exe()
+FFMPEG = "ffmpeg"
 
 
 def build_ken_burns_filter(escena: dict) -> str:
